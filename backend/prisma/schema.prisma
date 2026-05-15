@@ -1,0 +1,18 @@
+// Prisma schema file
+// Database connection and models will be defined here later
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Örnek Model (İleride genişletilecek)
+model User {
+  id    Int     @id @default(autoincrement())
+  email String  @unique
+  name  String?
+}
