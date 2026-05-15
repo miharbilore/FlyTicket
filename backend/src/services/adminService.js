@@ -150,9 +150,25 @@ const getAllTickets = async () => {
   });
 };
 
+/**
+ * Tüm uçuşları (kontenjan fark etmeksizin) listeler.
+ */
+const getAllFlights = async () => {
+  return await prisma.flight.findMany({
+    include: {
+      from_city: true,
+      to_city: true
+    },
+    orderBy: {
+      departure_time: 'asc'
+    }
+  });
+};
+
 module.exports = {
   createFlight,
   updateFlight,
   deleteFlight,
-  getAllTickets
+  getAllTickets,
+  getAllFlights
 };

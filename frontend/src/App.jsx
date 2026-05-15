@@ -6,18 +6,14 @@ import HomePage from './pages/HomePage';
 import FlightDetailPage from './pages/FlightDetailPage';
 import ConfirmationPage from './pages/ConfirmationPage';
 import NotFoundPage from './pages/NotFoundPage';
+import AdminLoginPage from './pages/AdminLoginPage';
+import AdminDashboardPage from './pages/AdminDashboardPage';
 
 /**
  * App.jsx
  * 
  * Uygulamanın ana giriş bileşenidir. 
  * React Router kullanarak sayfalar arası geçişi (navigation) burada tanımlıyoruz.
- * 
- * Routes:
- * - / : Ana sayfa (Uçuş arama)
- * - /flights/:id : Uçuş detayı ve bilet alma formu
- * - /confirmation/:ticketId : Satın alma sonrası onay sayfası
- * - * : Eşleşmeyen tüm adresler için 404 sayfası
  */
 
 function App() {
@@ -32,7 +28,7 @@ function App() {
             </Link>
             <nav>
               <Link to="/">Uçuş Ara</Link>
-              {/* İleride buraya 'Admin Girişi' eklenecek */}
+              <Link to="/admin/login">Admin Paneli</Link>
             </nav>
           </div>
         </header>
@@ -43,6 +39,11 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/flights/:id" element={<FlightDetailPage />} />
             <Route path="/confirmation/:ticketId" element={<ConfirmationPage />} />
+            
+            {/* Admin Rotaları */}
+            <Route path="/admin/login" element={<AdminLoginPage />} />
+            <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
+
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </main>

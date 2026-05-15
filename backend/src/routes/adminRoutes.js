@@ -13,7 +13,7 @@ const { protect } = require('../middleware/authMiddleware');
 // Tüm admin rotalarını korumaya alıyoruz
 router.use(protect);
 
-// Uçuş yönetimi
+router.get('/flights', adminController.getAllFlights);
 router.post('/flights', adminController.createFlight);
 router.put('/flights/:id', adminController.updateFlight);
 router.delete('/flights/:id', adminController.deleteFlight);

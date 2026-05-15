@@ -85,9 +85,23 @@ const getAllTickets = async (req, res) => {
   }
 };
 
+/**
+ * Tüm uçuşları listeleme
+ */
+const getAllFlights = async (req, res) => {
+  try {
+    const flights = await adminService.getAllFlights();
+    res.json(flights);
+  } catch (error) {
+    console.error('adminGetAllFlights error:', error);
+    res.status(500).json({ message: 'Uçuşlar listelenirken bir hata oluştu.' });
+  }
+};
+
 module.exports = {
   createFlight,
   updateFlight,
   deleteFlight,
-  getAllTickets
+  getAllTickets,
+  getAllFlights
 };
