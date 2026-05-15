@@ -58,35 +58,52 @@ const updateFlight = async (id, flightData) => {
 
   // 1. Uçuş var mı?
   const existingFlight = await prisma.flight.findUnique({ 
-    where: { flight_id: id },
-    include: { _count: { select: { tickets: true } } }
+    where: { flight_id: id }
   });
   if (!existingFlight) throw new Error('FLIGHT_NOT_FOUND');
 
-  // 2. Çakışma Kontrolü (Kendisi hariç)
-  if (departure_time) {
-    const depConflict = await prisma.flight.findFirst({
-      where: { 
-        from_city_id: from_city_id || existingFlight.from_city_id, 
-        departure_time: new Date(departure_time),
-        NOT: { flight_id: id }
-      }
-    });
-    if (depConflict) throw new Error('DEPARTURE_CONFLICT');
+  // 2. Final değerleri belirle (request body yoksa mevcut değeri kullan)
+  const finalFromCityId = from_city_id || existingFlight.from_city_id;
+  const finalToCityId = to_city_id || existingFlight.to_city_id;
+  const finalDepartureTime = departure_time ? new Date(departure_time) : new Date(existingFlight.departure_time);
+  const finalArrivalTime = arrival_time ? new Date(arrival_time) : new Date(existingFlight.arrival_time);
+  const finalPrice = price !== undefined ? price : existingFlight.price;
+  const finalSeatsTotal = seats_total !== undefined ? seats_total : existingFlight.seats_total;
+
+  // 3. Temel Validation
+  if (finalFromCityId === finalToCityId) throw new Error('SAME_CITY');
+  if (isNaN(finalDepartureTime.getTime()) || isNaN(finalArrivalTime.getTime())) throw new Error('INVALID_DATE');
+  if (finalArrivalTime <= finalDepartureTime) throw new Error('INVALID_TIME_RANGE');
+  if (finalPrice < 0) throw new Error('INVALID_PRICE');
+  if (finalSeatsTotal <= 0) throw new Error('INVALID_SEATS');
+
+  // 4. Şehirlerin varlığını kontrol et (Değiştiyse)
+  if (from_city_id || to_city_id) {
+    const fromCity = await prisma.city.findUnique({ where: { city_id: finalFromCityId } });
+    const toCity = await prisma.city.findUnique({ where: { city_id: finalToCityId } });
+    if (!fromCity || !toCity) throw new Error('CITY_NOT_FOUND');
   }
 
-  if (arrival_time) {
-    const arrConflict = await prisma.flight.findFirst({
-      where: { 
-        to_city_id: to_city_id || existingFlight.to_city_id, 
-        arrival_time: new Date(arrival_time),
-        NOT: { flight_id: id }
-      }
-    });
-    if (arrConflict) throw new Error('ARRIVAL_CONFLICT');
-  }
+  // 5. Çakışma Kontrolü (Kendisi hariç)
+  const depConflict = await prisma.flight.findFirst({
+    where: { 
+      from_city_id: finalFromCityId, 
+      departure_time: finalDepartureTime,
+      NOT: { flight_id: id }
+    }
+  });
+  if (depConflict) throw new Error('DEPARTURE_CONFLICT');
 
-  // 3. Koltuk sayısı güncelleme mantığı
+  const arrConflict = await prisma.flight.findFirst({
+    where: { 
+      to_city_id: finalToCityId, 
+      arrival_time: finalArrivalTime,
+      NOT: { flight_id: id }
+    }
+  });
+  if (arrConflict) throw new Error('ARRIVAL_CONFLICT');
+
+  // 6. Koltuk sayısı güncelleme mantığı
   let newSeatsAvailable = existingFlight.seats_available;
   if (seats_total !== undefined) {
     const soldSeats = existingFlight.seats_total - existingFlight.seats_available;
@@ -96,16 +113,16 @@ const updateFlight = async (id, flightData) => {
     newSeatsAvailable = seats_total - soldSeats;
   }
 
-  // 4. Güncelle
+  // 7. Güncelle
   return await prisma.flight.update({
     where: { flight_id: id },
     data: {
-      from_city_id,
-      to_city_id,
-      departure_time: departure_time ? new Date(departure_time) : undefined,
-      arrival_time: arrival_time ? new Date(arrival_time) : undefined,
-      price,
-      seats_total,
+      from_city_id: finalFromCityId,
+      to_city_id: finalToCityId,
+      departure_time: finalDepartureTime,
+      arrival_time: finalArrivalTime,
+      price: finalPrice,
+      seats_total: finalSeatsTotal,
       seats_available: newSeatsAvailable
     },
     include: {

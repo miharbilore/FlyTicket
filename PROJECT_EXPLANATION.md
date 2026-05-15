@@ -59,7 +59,7 @@ Bu dosya, projeyi hocaya sunarken ve savunurken sana rehberlik etmesi için haz�
 **C:** Stateless (durumsuz) bir kimlik doğrulama yöntemidir. Sunucunun her istekte "Bu kullanıcı kim?" diye veritabanına bakmasına gerek kalmaz. Token içindeki imzayı kontrol ederek güvenli bir şekilde kimlik doğrular.
 
 **S: Transaction neden kullandın?**
-**C:** Bilet alma işlemi iki adımdan oluşur: 1. Bilet oluşturma, 2. Uçaktaki koltuk sayısını azaltma. Eğer bilet oluşur ama koltuk sayısı azalmazsa veri tutarsızlığı olur. Transaction, bu iki işlemin ya beraber başarılı olmasını ya da biri hata verirse ikisinin birden iptal edilmesini sağlar.
+**C:** Bilet alma işlemi kritik bir işlemdir. Bilet oluşturulurken aynı zamanda uçağın `seats_available` (boş koltuk) sayısının azaltılması gerekir. Bunu bir Transaction içinde yapıyoruz. Ayrıca, eşzamanlı (concurrency) bilet alımlarında "overbooking" olmaması için backend'de "conditional update" (koltuk sayısı > 0 ise azalt) mantığını kullanıyoruz. Eğer bilet oluşur ama koltuk kalmazsa veya işlem yarıda kalırsa, Transaction sayesinde tüm adımlar geri alınır ve veri tutarlılığı korunur.
 
 **S: Uçuş çakışma kurallarını nerede kontrol ediyorsun?**
 **C:** `adminService.js` içinde kontrol ediyorum. Veritabanına yeni bir uçuş eklenmeden önce, aynı saatte o şehirden başka bir uçuş kalkıp kalkmadığına bakıyorum.

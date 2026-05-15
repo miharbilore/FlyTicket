@@ -44,10 +44,12 @@ FlyTicket, kullanıcıların uçuş aramasına, detayları görmesine ve bilet s
 ### 1. Backend Kurulumu
 ```bash
 cd backend
+copy .env.example .env
 npm install
-npx prisma migrate dev --name init
+npx prisma generate
+npx prisma migrate dev
 npx prisma db seed
-npm run dev
+npm start
 ```
 *Backend adresi: http://localhost:5000*
 
@@ -58,6 +60,8 @@ npm install
 npm run dev
 ```
 *Frontend adresi: http://localhost:3000*
+
+> **Önemli Not:** `GET /api/tickets/:email` endpointinde email URL içinde kullanılacağı için tarayıcı veya frontend tarafında encode edilmelidir. Örnek: `GET /api/tickets/test%40example.com`
 
 ### Admin Giriş Bilgileri
 - **Kullanıcı Adı:** `admin`

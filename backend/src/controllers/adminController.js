@@ -32,6 +32,8 @@ const createFlight = async (req, res) => {
     if (error.message === 'CITY_NOT_FOUND') return res.status(404).json({ message: 'One or both cities not found.' });
     if (error.message === 'DEPARTURE_CONFLICT') return res.status(400).json({ message: 'Another flight already departs from this city at the same time.' });
     if (error.message === 'ARRIVAL_CONFLICT') return res.status(400).json({ message: 'Another flight already arrives to this city at the same time.' });
+    if (error.message === 'SAME_CITY') return res.status(400).json({ message: 'Departure and arrival cities cannot be the same.' });
+    if (error.message === 'INVALID_TIME_RANGE') return res.status(400).json({ message: 'Arrival time must be after departure time.' });
     
     res.status(500).json({ message: 'Uçuş oluşturulurken bir hata oluştu.' });
   }
@@ -48,8 +50,15 @@ const updateFlight = async (req, res) => {
   } catch (error) {
     console.error('adminUpdateFlight error:', error);
     if (error.message === 'FLIGHT_NOT_FOUND') return res.status(404).json({ message: 'Flight not found.' });
+    if (error.message === 'CITY_NOT_FOUND') return res.status(404).json({ message: 'One or both cities not found.' });
     if (error.message === 'TOTAL_SEATS_TOO_LOW') return res.status(400).json({ message: 'Total seats cannot be less than already sold tickets.' });
-    if (error.message === 'DEPARTURE_CONFLICT') return res.status(400).json({ message: 'Scheduling conflict: Departure time busy.' });
+    if (error.message === 'DEPARTURE_CONFLICT') return res.status(400).json({ message: 'Another flight already departs from this city at the same time.' });
+    if (error.message === 'ARRIVAL_CONFLICT') return res.status(400).json({ message: 'Another flight already arrives to this city at the same time.' });
+    if (error.message === 'SAME_CITY') return res.status(400).json({ message: 'Departure and arrival cities cannot be the same.' });
+    if (error.message === 'INVALID_TIME_RANGE') return res.status(400).json({ message: 'Arrival time must be after departure time.' });
+    if (error.message === 'INVALID_DATE') return res.status(400).json({ message: 'Please provide valid dates.' });
+    if (error.message === 'INVALID_PRICE') return res.status(400).json({ message: 'Price must be a positive number.' });
+    if (error.message === 'INVALID_SEATS') return res.status(400).json({ message: 'Seats total must be a positive number.' });
     
     res.status(500).json({ message: 'Uçuş güncellenirken bir hata oluştu.' });
   }
