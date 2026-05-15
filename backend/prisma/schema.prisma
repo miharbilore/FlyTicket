@@ -1,5 +1,8 @@
-// Prisma schema file
-// Database connection and models will be defined here later
+// schema.prisma
+// 
+// Veritabanı yapısını (modelleri) ve aralarındaki ilişkileri tanımladığımız dosyadır.
+// Prisma bu dosyayı okuyarak hem veritabanı tablolarını oluşturur (migration)
+// hem de kod tarafında kullanacağımız Prisma Client'ı generate eder.
 
 generator client {
   provider = "prisma-client-js"
@@ -10,9 +13,59 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Örnek Model (İleride genişletilecek)
-model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
+// 1. Şehirler Modeli
+// Her şehir benzersiz bir ID'ye ve isme sahiptir.
+model City {
+  city_id   String   @id @default(cuid())
+  city_name String   @unique
+
+  // Bir şehirden kalkan uçuşlar (İlişki tanımları)
+  // Bir şehirden birden fazla uçuş kalkabilir veya oraya varabilir.
+  fromFlights Flight[] @relation("FromCity")
+  toFlights   Flight[] @relation("ToCity")
+}
+
+// 2. Uçuşlar Modeli
+// Uçuşlar iki şehir (kalkış-varış) arasında gerçekleşir.
+model Flight {
+  flight_id       String   @id @default(cuid())
+  
+  // Kalkış şehri ilişkisi
+  from_city_id    String
+  from_city       City     @relation("FromCity", fields: [from_city_id], references: [city_id])
+  
+  // Varış şehri ilişkisi
+  to_city_id      String
+  to_city         City     @relation("ToCity", fields: [to_city_id], references: [city_id])
+
+  departure_time  DateTime
+  arrival_time    DateTime
+  price           Float
+  seats_total     Int
+  seats_available Int
+
+  // Bir uçuşa ait birden fazla bilet kesilebilir.
+  tickets         Ticket[]
+}
+
+// 3. Biletler Modeli
+// Yolcu bilgilerini ve bağlı olduğu uçuşu tutar.
+model Ticket {
+  ticket_id         String   @id @default(cuid())
+  passenger_name    String
+  passenger_surname String
+  passenger_email   String
+  seat_number       String?  // İsteğe bağlı (optional) koltuk numarası
+
+  // Hangi uçuşa ait olduğunu belirten ilişki
+  flight_id         String
+  flight            Flight   @relation(fields: [flight_id], references: [flight_id])
+}
+
+// 4. Admin Modeli
+// Admin girişi için gereken bilgiler.
+model Admin {
+  id       String @id @default(cuid())
+  username String @unique
+  password String // Güvenlik için bcrypt ile hashlenmiş olarak saklanacak
 }
