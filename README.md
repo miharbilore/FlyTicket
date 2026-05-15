@@ -1,44 +1,78 @@
 # FlyTicket - Uçak Bileti Rezervasyon Sistemi
 
-Bu proje, Node.js Dynamic Web Programming dersi final projesi olarak geliştirilmektedir. Modern full-stack web teknolojileri kullanılarak basit ve anlaşılır bir uçak bileti yönetim sistemi hedeflenmektedir.
+FlyTicket, Node.js ve React kullanılarak geliştirilmiş, modern ve uçtan uca çalışan bir uçak bileti yönetim sistemidir. Bu proje, "Node.js Dynamic Web Programming" dersi final projesi olarak hazırlanmıştır.
 
-## 🚀 Teknolojiler
+## 🚀 Proje Hakkında
 
-- **Backend:** Node.js, Express, Prisma ORM
-- **Database:** SQLite
-- **Frontend:** React (Vite), React Router, Axios
-- **Styling:** Vanilla CSS
+FlyTicket, kullanıcıların uçuş aramasına, detayları görmesine ve bilet satın almasına olanak tanırken; yöneticilerin (admin) uçuşları ve bilet satışlarını profesyonel bir panelden yönetmesini sağlar.
 
-## 🛠️ Kurulum ve Çalıştırma
+## ✨ Özellikler
 
-### 1. Backend Hazırlığı
+### Kullanıcı Özellikleri
+- **Gelişmiş Arama:** Kalkış, varış ve tarih bazlı uçuş arama.
+- **Uçuş Listeleme:** Arama kriterlerine göre gerçek zamanlı uçuş sonuçları.
+- **Detaylı İnceleme:** Uçuş saatleri, fiyat ve kalan koltuk sayısı görüntüleme.
+- **Biletleme:** Hızlı ve güvenli bilet satın alma formu.
+- **E-Bilet Onayı:** Satın alma sonrası PNR kodu ve bilet özeti.
+- **Yazdırma Desteği:** Dijital bileti doğrudan tarayıcı üzerinden yazdırma.
+
+### Admin Özellikleri
+- **Güvenli Giriş:** JWT (JSON Web Token) tabanlı yetkilendirme.
+- **Uçuş Yönetimi (CRUD):** Yeni uçuş ekleme, mevcut uçuşları güncelleme ve silme.
+- **Çakışma Kontrolü:** Aynı şehirden aynı saatte birden fazla uçuş kalkmasını engelleyen akıllı zamanlama sistemi.
+- **Koltuk Yönetimi:** Satılan biletlere göre otomatik azalan ve yönetilebilen kontenjan sistemi.
+- **Bilet İzleme:** Sistemdeki tüm bilet satışlarını detaylı olarak listeleme.
+
+## 🛠️ Kullanılan Teknolojiler
+
+- **Frontend:** React.js, Vite, React Router, Axios.
+- **Backend:** Node.js, Express.js.
+- **Veritabanı:** SQLite (Dosya tabanlı, kurulum gerektirmez).
+- **ORM:** Prisma.
+- **Güvenlik:** JWT (Kimlik Doğrulama), Bcrypt.js (Şifre Hashleme).
+- **Stil:** Vanilla CSS (Modern Tasarım Prensipleri).
+
+## 🗄️ Veritabanı Modelleri
+
+- **City:** Şehir bilgileri (İsim ve ID).
+- **Flight:** Uçuş bilgileri (Rota, Tarih, Fiyat, Kontenjan).
+- **Ticket:** Bilet ve Yolcu bilgileri.
+- **Admin:** Yönetici giriş bilgileri.
+
+## ⚙️ Kurulum ve Çalıştırma
+
+### 1. Backend Kurulumu
 ```bash
 cd backend
 npm install
-# .env dosyasını kontrol edin
-# Prisma istemcisini oluşturun
-npx prisma generate
+npx prisma migrate dev --name init
+npx prisma db seed
 npm run dev
 ```
+*Backend adresi: http://localhost:5000*
 
-### 2. Frontend Hazırlığı
+### 2. Frontend Kurulumu
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
+*Frontend adresi: http://localhost:3000*
 
-## 📍 API Endpoint'leri
-- `GET /api/health`: Sistemin çalışma durumunu kontrol eder.
+### Admin Giriş Bilgileri
+- **Kullanıcı Adı:** `admin`
+- **Şifre:** `admin123`
 
-## 📅 Development Roadmap
+## 📝 Önemli Notlar
+- Proje, veri tutarlılığını sağlamak için veritabanı **Transaction** yapılarını kullanır.
+- Tüm admin rotaları sunucu tarafında korunmaktadır.
+- Projede harici bir UI kütüphanesi kullanılmamış, tüm stiller özgün CSS ile yazılmıştır.
 
-- [x] Proje iskeletinin oluşturulması
-- [ ] Veritabanı modellerinin (Flight, Ticket, User) tasarlanması
-- [ ] Backend CRUD işlemlerinin yazılması (Uçuş ekleme, bilet alma)
-- [ ] Admin paneli ve JWT tabanlı giriş sistemi
-- [ ] Frontend arayüzünün geliştirilmesi (Arama, Liste, Satın Alma)
-- [ ] Final cilalama ve sunum hazırlığı
+## 📂 Klasör Yapısı
+- `backend/src/services`: İş mantığı (Zaman çakışması, biletleme).
+- `backend/src/controllers`: HTTP istek yönetimi.
+- `frontend/src/pages`: Uygulama sayfaları.
+- `frontend/src/api`: Merkezi API istemcisi.
 
 ---
-*Bu proje eğitim amaçlıdır.*
+*Bu proje akademik amaçlarla geliştirilmiştir.*
