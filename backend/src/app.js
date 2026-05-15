@@ -25,6 +25,7 @@ app.use(express.json());
 // Rota dosyalarını içeri aktarıyoruz
 const cityRoutes = require('./routes/cityRoutes');
 const flightRoutes = require('./routes/flightRoutes');
+const ticketRoutes = require('./routes/ticketRoutes');
 
 // Health Check: API'nin çalışıp çalışmadığını kontrol etmek için basit bir endpoint
 app.get('/api/health', (req, res) => {
@@ -37,5 +38,6 @@ app.get('/api/health', (req, res) => {
 // API Rotalarını tanımlıyoruz
 app.use('/api/cities', cityRoutes);
 app.use('/api/flights', flightRoutes);
+app.use('/api/tickets', ticketRoutes);
 
 module.exports = app;
